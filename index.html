@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step TYPING</title>
+
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="apple-touch-icon-180x180.png" sizes="180x180">
+    <link rel="icon" type="image/png" href="android-chrome-192x192.png" sizes="192x192">
+
+    <style>
+        html {
+            /* background-color: rgba(21, 22, 28, 80%); */
+            background-color: white;
+            color: rgb(88, 127, 173);
+            font-family: sans-serif;
+        }
+
+        /* header{
+    font-family: serif;
+} */
+
+        .main {
+            /* background-color: #6f7275; */
+            /* color: white; */
+            color: black;
+
+            text-align: center;
+            margin-right: auto;
+            margin-left: auto;
+            padding: 10px;
+            /* border: double 5px black; */
+            /* border-radius: 10px; */
+            /* box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.5); */
+
+            /* box-shadow: 0px 5px 15px 0.1px rgba(0, 0, 0, 0.5); */
+            box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.2);
+
+        }
+
+
+        header {
+            font-size: 30px;
+        }
+
+        .textbox1 {
+            /* background-color: rgba(88, 127, 173, 100%); */
+            background-color: white;
+            color: rgb(0, 0, 0);
+            /* font-family: serif; */
+            font-size: 16px;
+
+            resize: none;
+
+            margin-right: auto;
+            margin-left: auto;
+            border-radius: 10px;
+
+            /* はみ出さないように処理 */
+            /* box-sizing: border-box; */
+            /* -moz-box-sizing: border-box; */
+            /* Firefox */
+            /* -webkit-box-sizing: border-box; */
+            /* Chrome, Safari */
+
+            box-sizing: border-box;
+            /* この行を追加 */
+            width: 100%;
+            /* この行を追加 */
+
+            border: none;
+        }
+
+        .getText {
+            /* background-color: #919599;
+    color: white; */
+            background-color: white;
+            color: black;
+            text-align: left;
+            /* font-family: serif; */
+
+            margin-right: 10px;
+            margin-left: 10px;
+            padding: 5px;
+            border-radius: 7px;
+
+            word-break: break-all;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+
+        .timeDisplayBox {
+            background-color: #635a61;
+            text-align: center;
+
+            margin-top: 20px;
+            margin-right: auto;
+            margin-left: auto;
+            border-radius: 10px;
+        }
+
+        #timeDisplay {
+            background-color: #635a61;
+            text-align: center;
+
+            margin-top: auto;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .buttonBox {
+            text-align: center;
+            margin-top: 20px;
+            margin-right: auto;
+            margin-left: auto;
+        }
+
+        .buttonContent {
+            font-size: 20px;
+            /* background-color: #848d9c; */
+            background-color: white;
+
+            padding: 10px;
+            border: solid 0px black;
+            border-radius: 200px;
+
+            /* box-shadow: 2px 2px 5px 0 rgba(0, 0, 0, 0.5); */
+            box-shadow: 0px 0px 7px 0.1px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.js"
+        integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4=" crossorigin="anonymous"></script>
+</head>
+
+<body>
+    <div class="main">
+        <header>Step TYPING</header>
+        <textarea class="textbox1" id="" cols="30" rows="10" placeholder="Type here ..." readonly></textarea>
+        <div class="getText">・TEXT</div>
+    </div>
+
+    <!-- <div class="timeDisplayBox">
+        Time passed: 
+        <span id="timeDisplay"></span>
+    </div> -->
+
+    <div class="buttonBox">
+        <button class="buttonContent" id="startButton">Start writing!</button>
+        <button class="buttonContent" id="stopButton">Stop writing!</button>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+
+            let typingBetweenTimes = [];
+
+            function setWindowSize() {
+                let windowWidth = $(window).width();
+                let windowHeight = $(window).height();
+
+                $('.textbox1').attr({
+                    // 16はtextbox1のfont-size
+                    rows: Math.floor(windowHeight / 2 / 16),
+                    cols: Math.floor(windowWidth * 6 / 5 / 16)
+                });
+
+                $('.main').css({
+                    width: windowWidth * 2 / 3,
+                    //height: windowHeight * 2 / 3,
+                });
+
+                $('.getText').css({
+
+                })
+
+                $('.timeDisplayBox').css({
+                    width: windowWidth * 2 / 3
+                });
+
+                $('.buttonBox').css({
+                    width: windowWidth * 2 / 3
+                });
+
+            }
+
+            setWindowSize();
+
+            $(window).resize(setWindowSize);
+
+            function displayTime() {
+                let typingStartTime;
+                let typingEndTime;
+
+                $('.textbox1').on('keydown', function () {
+                    if (!typingStartTime) {
+                        typingStartTime = new Date().getTime();
+                    } else {
+                        typingEndTime = new Date().getTime();
+                        const typingBetweenTime = typingEndTime - typingStartTime;
+
+                        typingBetweenTimes.push(typingBetweenTime);
+
+                        $('#timeDisplay').text(typingBetweenTime + 'ms');
+                        typingStartTime = typingEndTime;
+
+                        let textContent = $('.textbox1').val();
+                        $('.getText').html(textContent);
+
+                        if ($('.getText').length) {
+                            let getText = $('.getText');
+                            let currentText = getText.text();
+                            let newTextContext = currentText.split('').map(function (value, index) {
+                                return "<span class='changeColor' data-time='" + typingBetweenTimes[index] + "'>" + value + "</span>"
+                            }).join("");
+
+                            getText.html(newTextContext);
+
+                        }
+
+                    }
+
+                });
+            }
+
+
+
+            function setStopTime() {
+                $('.textbox1').off('keydown');
+                $('#timeDisplay').text('0ms');
+            }
+
+            $('#startButton').on('click', function () {
+                displayTime();
+                //打ち込み可能にする
+                $('.textbox1').removeAttr("readonly");
+            });
+
+            $('#stopButton').on('click', function () {
+                setStopTime();
+
+                $('.textbox1').prop('readonly', true)
+
+                $('.changeColor').each(function () {
+                    //ランダム変化用
+                    // let randomColor = createRandomColor();
+                    // $(this).css("color", randomColor);
+                    applyColorToTime($(this).data('time'));
+                });
+
+                function applyColorToTime(time) {
+
+                    $('.changeColor').each(function () {
+                        //色変更テスト用(debug)
+                        // $('.changeColor[data-time="' + time +'"]').css('color', "rgb("+ time +", 100, 100)");
+
+                        //(test)の変数
+                        // let setMaxTime = 5000;
+                        // let setMidTime = 500;
+
+                        //色決定のルール(test)
+                        // if (time > setMidTime && time < setMaxTime) {
+                        //     const under100000Color = getMap(time, 500, setMaxTime, 100, 255);
+                        //     $('.changeColor[data-time="' + time + '"]').css('color', "rgb(" + under100000Color + ", 100, 100)");
+                        // } else if (time < setMidTime) {
+                        //     const under500Color = getMap(time, 0, setMidTime, 0, 100);
+                        //     $('.changeColor[data-time="' + time + '"]').css('color', "rgb(" + under500Color + ", 100, 100)");
+                        // }
+
+
+                        //css変更のルール(color: white; background-color: black; rgbA(30%~100%); font-soze(default-16px)(5px~50px); border-radius(1px~10px);)
+                        // p1(0ms~50ms), p2(51ms~450ms), p3(451ms~1050ms), p4(1051ms~5000ms), p5(5001ms~10000ms)
+                        let p1Min = 0;
+                        let p1Max = 50;
+                        let p2Max = 450;
+                        let p3Max = 1050;
+                        let p4Max = 5000;
+                        let p5Max = 10000;
+
+
+                        if (time < p5Max && time > p4Max) {
+                            let getAlphaData4_5 = getMap(time, p4Max, p5Max, 100, 30);
+                            let getRadiusData4_5 = getMap(time, p4Max, p5Max, 1, 16);
+                            let getFontSize4_5 = getMap(time, p4Max, p5Max, 40, 50);
+
+                            $('.changeColor[data-time="' + time + '"]').css({
+                                'background-color': "rgb(0, 0, 0)",
+                                color: "rgba(255, 255, 255, " + getAlphaData4_5 / 100 + " )",
+                                'border-radius': getRadiusData4_5 + 'px',
+                                'font-size': getFontSize4_5 + 'px',
+                                width: getAlphaData4_5 + 'px'
+                            });
+
+                        } else if (time <= p4Max && time > p3Max) {
+                            let getAlphaData3_4 = getMap(time, p3Max, p4Max, 100, 30);
+                            let getRadiusData3_4 = getMap(time, p3Max, p4Max, 1, 16);
+                            let getFontSize3_4 = getMap(time, p3Max, p4Max, 30, 40);
+
+                            $('.changeColor[data-time="' + time + '"]').css({
+                                'background-color': "rgb(0, 0, 0)",
+                                color: "rgba(255, 255, 255, " + getAlphaData3_4 / 100 + " )",
+                                'border-radius': getRadiusData3_4 + 'px',
+                                'font-size': getFontSize3_4 + 'px',
+                                width: getFontSize3_4 + 'px'
+                            });
+
+                        } else if (time <= p3Max && time > p2Max) {
+                            let getAlphaData2_3 = getMap(time, p2Max, p3Max, 100, 30);
+                            let getRadiusData2_3 = getMap(time, p2Max, p3Max, 1, 16);
+                            let getFontSize2_3 = getMap(time, p2Max, p3Max, 20, 30);
+
+                            $('.changeColor[data-time="' + time + '"]').css({
+                                'background-color': "rgb(0, 0, 0)",
+                                color: "rgba(255, 255, 255, " + getAlphaData2_3 / 100 + " )",
+                                'border-radius': getRadiusData2_3 + 'px',
+                                'font-size': getFontSize2_3 + 'px',
+                                width: getFontSize2_3 + 'px'
+                            });
+
+                        } else if (time <= p2Max && time > p1Max) {
+                            let getAlphaData1_2 = getMap(time, p1Max, p2Max, 100, 30);
+                            let getRadiusData1_2 = getMap(time, p1Max, p2Max, 1, 16);
+                            let getFontSize1_2 = getMap(time, p1Max, p2Max, 7, 20);
+
+                            $('.changeColor[data-time="' + time + '"]').css({
+                                'background-color': "rgb(0, 0, 0)",
+                                color: "rgba(255, 255, 255, " + getAlphaData1_2 / 100 + " )",
+                                'border-radius': getRadiusData1_2 + 'px',
+                                'font-size': getFontSize1_2 + 'px',
+                                width: getFontSize1_2 + 'px'
+                            });
+
+                        } else if (time <= p1Max) {
+                            let getAlphaData0_1 = getMap(time, p1Min, p1Max, 100, 30);
+                            let getRadiusData0_1 = getMap(time, p1Min, p1Max, 1, 16);
+                            let getFontSize0_1 = getMap(time, p1Min, p1Max, 5, 7);
+
+                            $('.changeColor[data-time="' + time + '"]').css({
+                                'background-color': "rgb(0, 0, 0)",
+                                color: "rgba(255, 255, 255, " + getAlphaData0_1 / 100 + " )",
+                                'border-radius': getRadiusData0_1 + 'px',
+                                'font-size': getFontSize0_1 + 'px',
+                                width: getFontSize0_1 + 'px'
+                            });
+
+                        }
+
+                    });
+                }
+
+                function getMap(read, inMin, inMax, outMin, outMax) {
+                    let value = (read - inMin) * (outMax - outMin) / (inMax - inMin) + outMin;
+                    return value;
+                }
+            });
+
+
+        });
+
+
+
+
+    </script>
+</body>
+
+</html>
